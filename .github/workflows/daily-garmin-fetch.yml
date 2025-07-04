@@ -1,0 +1,38 @@
+name: Daily Garmin Data Fetch
+
+on:
+  schedule:
+    # Run daily at 8:00 AM UTC (adjust timezone as needed)
+    - cron: "0 8 * * *"
+  # Allow manual triggering
+  workflow_dispatch:
+
+jobs:
+  fetch-garmin-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Garmin data fetch
+        env:
+          EMAIL: ${{ secrets.EMAIL }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          PG_ID: ${{ secrets.PG_ID }}
+          DB_ID: ${{ secrets.DB_ID }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GARMINTOKENS_BASE64: ${{ secrets.GARMINTOKENS_BASE64 }}
+        run: |
+          python garmin/garmin_data.py

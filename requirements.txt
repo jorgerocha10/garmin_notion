@@ -1,0 +1,6 @@
+garth
+requests
+garminconnect 
+notion-client
+python-dotenv
+openai
