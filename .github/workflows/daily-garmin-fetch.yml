@@ -3,7 +3,7 @@ name: Daily Garmin Data Fetch
 on:
   schedule:
     # Run daily at 8:00 AM UTC (adjust timezone as needed)
-    - cron: "0 8 * * *"
+    - cron: "0 11 * * *"
   # Allow manual triggering
   workflow_dispatch:
 

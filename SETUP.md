@@ -35,22 +35,40 @@ Add the following secrets:
 
 ### 3. Initial Token Setup (Important!)
 
-Since GitHub Actions runs in a fresh environment each time, you need to generate Garmin tokens first:
+Since GitHub Actions runs in a fresh environment each time, you need to extract your Garmin tokens:
 
-**Option A: Run locally first (Recommended)**
+**Step 1: Check if you have tokens locally**
 
 1. Run the script locally once: `python garmin/garmin_data.py`
-2. After successful login, the script will generate tokens
-3. The tokens will be logged (you'll see "Tokens saved" message)
-4. You'll need to manually add the base64 token to GitHub Secrets as `GARMINTOKENS_BASE64`
+2. If it works (shows "Fetching data for..."), you already have tokens stored locally
 
-**Option B: Use GitHub Actions workflow_dispatch**
+**Step 2: Extract tokens for GitHub Actions**
 
-1. Go to Actions tab in your GitHub repository
-2. Click "Daily Garmin Data Fetch"
-3. Click "Run workflow" to run it manually
-4. The first run might fail due to MFA - this is expected
-5. Check the logs for any token information
+1. Create a temporary script called `get_tokens.py` with this content:
+
+   ```python
+   import os
+   import base64
+   from garth import Client
+
+   token_dir = os.path.expanduser("~/.garminconnect")
+   client = Client()
+   client.load(token_dir)
+   token_data = client.dumps()
+   token_base64 = base64.b64encode(token_data.encode()).decode()
+   print("GARMINTOKENS_BASE64 =", token_base64)
+   ```
+
+2. Run it: `python get_tokens.py`
+3. Copy the base64 string from the output
+4. Add it to GitHub Secrets as `GARMINTOKENS_BASE64`
+5. Delete the temporary script
+
+**Step 3: If you don't have tokens yet**
+
+1. Run `python garmin/garmin_data.py` and complete the login process
+2. If MFA is required, enter the code when prompted
+3. Once successful, follow Step 2 above to extract the tokens
 
 ### 4. Handling MFA (Multi-Factor Authentication)
 
